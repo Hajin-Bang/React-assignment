@@ -4,32 +4,27 @@ import { useNavigate } from 'react-router-dom';
 
 import { pageRoutes } from '@/apiRoutes';
 import { ApiErrorBoundary } from '@/pages/common/components/ApiErrorBoundary';
-import { logout } from '@/store/auth/authSlice';
-import { initCart } from '@/store/cart/cartSlice';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useModal } from '@/hooks/useModal';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { CartButton } from './CartButton';
 import { ConfirmModal } from './ConfirmModal';
 import { LoginButton } from './LoginButton';
 import { LogoutButton } from './LogoutButton';
 import { useAuthStore } from '@/store/auth/authStore';
+import useCartStore from '@/store/cart/cartStore';
 
 export const NavigationBar = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const { isOpen, openModal, closeModal } = useModal();
-  // const { isLogin, user } = useAppSelector((state) => state.auth);
-  const { cart } = useAppSelector((state) => state.cart);
-
+  const { cart, initCart } = useCartStore();
   const { isLogin, user, logout } = useAuthStore();
 
   useEffect(() => {
     if (isLogin && user && cart.length === 0) {
-      dispatch(initCart(user.uid));
+      initCart(user.uid);
     }
-  }, [isLogin, user, dispatch, cart.length]);
+  }, [isLogin, user, cart.length, initCart]);
 
   const handleLogout = () => {
     openModal();

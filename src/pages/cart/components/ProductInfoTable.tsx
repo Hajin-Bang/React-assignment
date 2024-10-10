@@ -8,13 +8,10 @@ import {
 import { ProductInfoTableRow } from '@/pages/cart/components/ProductInfoTableRow';
 import { useAuthStore } from '@/store/auth/authStore';
 import useCartStore from '@/store/cart/cartStore';
-// import { selectCart } from '@/store/cart/cartSelectors';
 import { IUser } from '@/types/authType';
 import { CartItem } from '@/types/cartType';
 
 export const ProductInfoTable = () => {
-  // const cart: CartItem[] = useAppSelector(selectCart);
-
   const cart: CartItem[] = useCartStore((state) => state.cart);
   const user: IUser | null = useAuthStore((state) => state.user);
 
