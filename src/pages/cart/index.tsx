@@ -1,7 +1,7 @@
 import { CartTable } from '@/pages/cart/components/CartTable';
 import { EmptyNotice } from '@/pages/cart/components/EmptyNotice';
 import { Layout, authStatusType } from '@/pages/common/components/Layout';
-import useCartStore from '@/store/cart/cartStore';
+import useCartStore from '@/store/cart/useCartStore';
 
 export const Cart = () => {
   const { cart } = useCartStore();

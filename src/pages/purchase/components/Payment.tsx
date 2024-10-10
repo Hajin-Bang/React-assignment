@@ -4,7 +4,7 @@ import { CreditCard } from 'lucide-react';
 
 import { PaymentMethodTableRow } from '@/pages/purchase/components/PaymentMethodTableRow';
 import { formatPrice } from '@/utils/formatter';
-import useCartStore from '@/store/cart/cartStore';
+import useCartStore from '@/store/cart/useCartStore';
 
 interface PaymentProps {
   paymentMethod: string;

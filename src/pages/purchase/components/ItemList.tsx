@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/table';
 import { ShoppingCart } from 'lucide-react';
 import { formatPrice } from '@/utils/formatter';
-import useCartStore from '@/store/cart/cartStore';
+import useCartStore from '@/store/cart/useCartStore';
 
 export const ItemList = () => {
   const { cart } = useCartStore();

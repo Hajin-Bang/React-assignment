@@ -14,7 +14,7 @@ import { ItemList } from '@/pages/purchase/components/ItemList';
 import { Payment } from '@/pages/purchase/components/Payment';
 import { ShippingInformationForm } from '@/pages/purchase/components/ShippingInformationForm';
 import { useAuthStore } from '@/store/auth/useAuthStore';
-import useCartStore from '@/store/cart/cartStore';
+import useCartStore from '@/store/cart/useCartStore';
 import usePurchaseStore from '@/store/purchase/usePurchaseStore';
 
 export interface FormData {

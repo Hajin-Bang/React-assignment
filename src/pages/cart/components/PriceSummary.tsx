@@ -1,6 +1,6 @@
 import { pageRoutes } from '@/apiRoutes';
 import { Button } from '@/components/ui/button';
-import useCartStore from '@/store/cart/cartStore';
+import useCartStore from '@/store/cart/useCartStore';
 import { formatNumber, formatPrice } from '@/utils/formatter';
 import { useNavigate } from 'react-router-dom';
 

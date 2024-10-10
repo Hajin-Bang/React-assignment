@@ -11,8 +11,8 @@ import { CartButton } from './CartButton';
 import { ConfirmModal } from './ConfirmModal';
 import { LoginButton } from './LoginButton';
 import { LogoutButton } from './LogoutButton';
-import { useAuthStore } from '@/store/auth/authStore';
-import useCartStore from '@/store/cart/cartStore';
+import { useAuthStore } from '@/store/auth/useAuthStore';
+import useCartStore from '@/store/cart/useCartStore';
 
 export const NavigationBar = () => {
   const navigate = useNavigate();
