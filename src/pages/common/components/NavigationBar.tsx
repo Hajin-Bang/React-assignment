@@ -14,13 +14,16 @@ import { CartButton } from './CartButton';
 import { ConfirmModal } from './ConfirmModal';
 import { LoginButton } from './LoginButton';
 import { LogoutButton } from './LogoutButton';
+import { useAuthStore } from '@/store/auth/authStore';
 
 export const NavigationBar = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isOpen, openModal, closeModal } = useModal();
-  const { isLogin, user } = useAppSelector((state) => state.auth);
+  // const { isLogin, user } = useAppSelector((state) => state.auth);
   const { cart } = useAppSelector((state) => state.cart);
+
+  const { isLogin, user, logout } = useAuthStore();
 
   useEffect(() => {
     if (isLogin && user && cart.length === 0) {
@@ -33,7 +36,7 @@ export const NavigationBar = () => {
   };
 
   const handleConfirmLogout = () => {
-    dispatch(logout());
+    logout();
     Cookies.remove('accessToken');
     closeModal();
   };

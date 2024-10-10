@@ -5,7 +5,6 @@ import { PRODUCT_PAGE_SIZE } from '@/constants';
 import { extractIndexLink, isFirebaseIndexError } from '@/helpers/error';
 import { useModal } from '@/hooks/useModal';
 import { FirebaseIndexErrorModal } from '@/pages/error/components/FirebaseIndexErrorModal';
-import { selectIsLogin, selectUser } from '@/store/auth/authSelectors';
 import { addCartItem } from '@/store/cart/cartSlice';
 import { selectFilter } from '@/store/filter/filterSelectors';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -24,6 +23,9 @@ import { ProductCardSkeleton } from '../skeletons/ProductCardSkeleton';
 import { EmptyProduct } from './EmptyProduct';
 import { ProductCard } from './ProductCard';
 import { ProductRegistrationModal } from './ProductRegistrationModal';
+// import useCartStore from '@/store/cart/cartStore';
+import { useAuthStore } from '@/store/auth/authStore';
+// import { useProductStore } from '@/store/product/productStore';
 
 interface ProductListProps {
   pageSize?: number;
@@ -44,9 +46,9 @@ export const ProductList: React.FC<ProductListProps> = ({
   const hasNextPage = useAppSelector(selectHasNextPage);
   const isLoading = useAppSelector(selectIsLoading);
   const filter = useAppSelector(selectFilter);
-  const user = useAppSelector(selectUser);
-  const isLogin = useAppSelector(selectIsLogin);
   const totalCount = useAppSelector(selectTotalCount);
+
+  const { isLogin, user } = useAuthStore();
 
   const loadProductsData = async (isInitial = false): Promise<void> => {
     try {
