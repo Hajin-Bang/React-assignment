@@ -20,10 +20,7 @@ export const ProductInfoTableRow = ({
 }: ProductInfoTableRowProps) => {
   const { id, title, count, image, price } = item;
 
-  const { changeCartItemCount, removeCartItem } = useCartStore((state) => ({
-    changeCartItemCount: state.changeCartItemCount,
-    removeCartItem: state.removeCartItem,
-  }));
+  const { changeCartItemCount, removeCartItem } = useCartStore();
 
   const handleClickDeleteItem = () => {
     if (user) {

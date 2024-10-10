@@ -12,8 +12,8 @@ import { IUser } from '@/types/authType';
 import { CartItem } from '@/types/cartType';
 
 export const ProductInfoTable = () => {
-  const cart: CartItem[] = useCartStore((state) => state.cart);
-  const user: IUser | null = useAuthStore((state) => state.user);
+  const { cart } = useCartStore();
+  const { user } = useAuthStore();
 
   return (
     <Table>

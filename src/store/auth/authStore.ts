@@ -13,10 +13,6 @@ interface AuthState {
   registerError: string | null;
   setIsLogin: (isLogin: boolean) => void;
   setUser: (user: IUser) => void;
-  setRegisterStatus: (
-    status: 'idle' | 'loading' | 'succeeded' | 'failed'
-  ) => void;
-  setRegisterError: (error: string | null) => void;
   logout: () => void;
 }
 
@@ -29,8 +25,6 @@ export const useAuthStore = create(
       registerError: null,
       setIsLogin: (isLogin) => set({ isLogin }),
       setUser: (user) => set({ user, isLogin: true }),
-      setRegisterStatus: (status) => set({ registerStatus: status }),
-      setRegisterError: (error) => set({ registerError: error }),
       logout: () => set({ isLogin: false, user: null }),
     }),
     {

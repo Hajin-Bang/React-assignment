@@ -12,7 +12,7 @@ import { formatPrice } from '@/utils/formatter';
 import useCartStore from '@/store/cart/cartStore';
 
 export const ItemList = () => {
-  const cart = useCartStore((state) => state.cart);
+  const { cart } = useCartStore();
 
   return (
     <Card className="mt-6">

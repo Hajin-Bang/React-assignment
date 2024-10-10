@@ -32,7 +32,7 @@ export interface FormErrors {
 export const Purchase: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const cart = useCartStore((state) => state.cart);
+  const { cart, resetCart } = useCartStore();
   const { isLoading, purchaseStart, purchaseSuccess, purchaseFailure } =
     usePurchaseStore();
 
@@ -89,7 +89,7 @@ export const Purchase: React.FC = () => {
     try {
       await makePurchase(purchaseData, user.uid, cart);
       purchaseSuccess();
-      useCartStore.getState().resetCart(user.uid); // 사용자의 카트 리셋
+      resetCart(user.uid);
       console.log('구매 성공!');
       navigate(pageRoutes.main);
     } catch (err) {

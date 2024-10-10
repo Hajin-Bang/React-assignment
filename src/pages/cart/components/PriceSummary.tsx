@@ -7,10 +7,7 @@ import { useNavigate } from 'react-router-dom';
 export const PriceSummary = () => {
   const navigate = useNavigate();
 
-  const { totalCount, totalPrice } = useCartStore((state) => ({
-    totalCount: state.totalCount,
-    totalPrice: state.totalPrice,
-  }));
+  const { totalCount, totalPrice } = useCartStore();
 
   const handleClickPurchase = () => {
     navigate(pageRoutes.purchase);

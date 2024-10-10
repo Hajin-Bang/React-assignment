@@ -17,21 +17,13 @@ interface FormErrors {
 }
 
 export const RegisterPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { registerStatus, registerError, setRegisterStatus, setRegisterError } =
-    useAuthStore();
+  const { registerStatus, registerError } = useAuthStore();
   const mutation = useRegisterUser();
 
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errors, setErrors] = useState<FormErrors>({});
-
-  useEffect(() => {
-    if (registerStatus === 'succeeded') {
-      navigate(pageRoutes.login);
-    }
-  }, [registerStatus, navigate]);
 
   const validateForm = (): boolean => {
     let formErrors: FormErrors = {};

@@ -24,7 +24,7 @@ export const NavigationBar = () => {
     if (isLogin && user && cart.length === 0) {
       initCart(user.uid);
     }
-  }, [isLogin, user, cart.length, initCart]);
+  }, [isLogin, user, initCart, cart.length]);
 
   const handleLogout = () => {
     openModal();
