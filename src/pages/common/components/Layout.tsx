@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 
 import { pageRoutes } from '@/apiRoutes';
 import { NavigationBar } from './NavigationBar';
-import { useAuthStore } from '@/store/auth/authStore';
+import { useAuthStore } from '@/store/auth/useAuthStore';
 
 export const authStatusType = {
   NEED_LOGIN: 'NEED_LOGIN',

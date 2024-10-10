@@ -11,7 +11,7 @@ import { pageRoutes } from '@/apiRoutes';
 import { EMAIL_PATTERN } from '@/constants';
 import { auth } from '@/firebase';
 import { Layout, authStatusType } from '@/pages/common/components/Layout';
-import { useAuthStore } from '@/store/auth/authStore';
+import { useAuthStore } from '@/store/auth/useAuthStore';
 
 interface FormErrors {
   email?: string;
@@ -70,7 +70,6 @@ export const LoginPage = () => {
           });
         }
 
-        // console.log('로그인 성공');
         navigate(pageRoutes.main);
       } catch (error) {
         console.error(

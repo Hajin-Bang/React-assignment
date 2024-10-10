@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { pageRoutes } from '@/apiRoutes';
 import { EMAIL_PATTERN } from '@/constants';
 import { Layout, authStatusType } from '@/pages/common/components/Layout';
-import { useAuthStore, useRegisterUser } from '@/store/auth/authStore';
+import { useRegisterUser } from '@/hooks/useRegisterUser';
 
 interface FormErrors {
   name?: string;
@@ -17,13 +17,26 @@ interface FormErrors {
 }
 
 export const RegisterPage: React.FC = () => {
-  const { registerStatus, registerError } = useAuthStore();
-  const mutation = useRegisterUser();
+  const navigate = useNavigate();
+
+  const {
+    mutate: registerUser,
+    isSuccess,
+    isPending,
+    isError,
+    error,
+  } = useRegisterUser();
 
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errors, setErrors] = useState<FormErrors>({});
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate(pageRoutes.login);
+    }
+  }, [isSuccess, navigate]);
 
   const validateForm = (): boolean => {
     let formErrors: FormErrors = {};
@@ -41,7 +54,16 @@ export const RegisterPage: React.FC = () => {
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
-      mutation.mutate({ email, password, name });
+      try {
+        registerUser({ email, password, name });
+        console.log('가입 성공!');
+        navigate(pageRoutes.login);
+      } catch (error) {
+        console.error(
+          '회원가입 중 오류가 발생했습니다. 다시 시도해 주세요.',
+          error
+        );
+      }
     }
   };
 
@@ -112,16 +134,10 @@ export const RegisterPage: React.FC = () => {
               <p className="text-sm text-red-500">{errors.password}</p>
             )}
           </div>
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={registerStatus === 'loading'}
-          >
-            {registerStatus === 'loading' ? '가입 중...' : '회원가입'}
+          <Button type="submit" className="w-full" disabled={isPending}>
+            {isPending ? '가입 중...' : '회원가입'}
           </Button>
-          {registerError && (
-            <p className="text-sm text-red-500">{registerError}</p>
-          )}
+          {isError && <p className="text-sm text-red-500">{error.message}</p>}
         </form>
       </div>
     </Layout>
