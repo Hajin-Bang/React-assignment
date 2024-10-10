@@ -17,11 +17,12 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { ALL_CATEGORY_ID, categories } from '@/constants';
-import { createNewProduct, initialProductState } from '@/helpers/product';
+import { createNewProduct } from '@/helpers/product';
 import { useAppDispatch } from '@/store/hooks';
 import { addProduct } from '@/store/product/productsActions';
 import { uploadImage } from '@/utils/imageUpload';
 import { ChangeEvent, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 interface ProductRegistrationModalProps {
   isOpen: boolean;
@@ -33,48 +34,44 @@ export const ProductRegistrationModal: React.FC<
   ProductRegistrationModalProps
 > = ({ isOpen, onClose, onProductAdded }) => {
   const dispatch = useAppDispatch();
-  const [product, setProduct] = useState<NewProductDTO>(initialProductState);
+  const { register, handleSubmit, setValue, reset } = useForm<NewProductDTO>({
+    defaultValues: {
+      title: '',
+      price: 0,
+      description: '',
+      category: { id: '' },
+    },
+  });
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ): void => {
-    const { name, value } = e.target;
-    setProduct((prev) => ({ ...prev, [name]: value }));
-  };
+  const [image, setImage] = useState<File | null>(null);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
-      setProduct((prev) => ({ ...prev, image: file }));
+      setImage(files[0]);
     }
   };
 
-  const handleSubmit = async (): Promise<void> => {
+  const onSubmit = async (data: NewProductDTO): Promise<void> => {
     try {
-      if (!product.image) {
+      if (!image) {
         throw new Error('이미지를 선택해야 합니다.');
       }
 
-      const imageUrl = await uploadImage(product.image as File);
+      const imageUrl = await uploadImage(image);
       if (!imageUrl) {
         throw new Error('이미지 업로드에 실패했습니다.');
       }
 
-      const newProduct = createNewProduct(product, imageUrl);
+      const newProduct = createNewProduct({ ...data }, imageUrl);
       await dispatch(addProduct(newProduct));
+      reset();
       onClose();
       onProductAdded();
     } catch (error) {
       console.error('물품 등록에 실패했습니다.', error);
     }
-  };
-
-  const handleCategoryChange = (value: string): void => {
-    setProduct((prev) => ({
-      ...prev,
-      category: { ...prev.category, id: value },
-    }));
   };
 
   return (
@@ -83,55 +80,40 @@ export const ProductRegistrationModal: React.FC<
         <DialogHeader>
           <DialogTitle>상품 등록</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <Input
-            name="title"
-            placeholder="상품명"
-            onChange={handleChange}
-            value={product.title || ''}
-          />
-          <Input
-            name="price"
-            type="number"
-            placeholder="가격"
-            onChange={handleChange}
-            value={product.price || ''}
-          />
-          <Textarea
-            name="description"
-            className="resize-none"
-            placeholder="상품 설명"
-            onChange={handleChange}
-            value={product.description || ''}
-          />
-          <Select
-            name="categoryId"
-            onValueChange={handleCategoryChange}
-            value={product.category.id || ''}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="카테고리 선택" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories
-                .filter((category) => category.id !== ALL_CATEGORY_ID)
-                .map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-          <Input
-            className="cursor-pointer"
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-          />
-        </div>
-        <DialogFooter>
-          <Button onClick={handleSubmit}>등록</Button>
-        </DialogFooter>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="grid gap-4 py-4">
+            <Input {...register('title')} placeholder="상품명" />
+            <Input
+              {...register('price', { valueAsNumber: true })}
+              type="number"
+              placeholder="가격"
+            />
+            <Textarea {...register('description')} placeholder="상품 설명" />
+            <Select onValueChange={(value) => setValue('category.id', value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="카테고리 선택" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories
+                  .filter((category) => category.id !== ALL_CATEGORY_ID)
+                  .map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+            <Input
+              className="cursor-pointer"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+          </div>
+          <DialogFooter>
+            <Button type="submit">등록</Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
