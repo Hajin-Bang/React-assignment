@@ -6,10 +6,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ProductInfoTableRow } from '@/pages/cart/components/ProductInfoTableRow';
-import { useAuthStore } from '@/store/auth/authStore';
-import useCartStore from '@/store/cart/cartStore';
-import { IUser } from '@/types/authType';
-import { CartItem } from '@/types/cartType';
+import { useAuthStore } from '@/store/auth/useAuthStore';
+import useCartStore from '@/store/cart/useCartStore';
 
 export const ProductInfoTable = () => {
   const { cart } = useCartStore();

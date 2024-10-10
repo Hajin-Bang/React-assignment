@@ -18,6 +18,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { ALL_CATEGORY_ID, categories } from '@/constants';
 import { createNewProduct } from '@/helpers/product';
+import { useAddProduct } from '@/hooks/useAddProducts';
 import { useAppDispatch } from '@/store/hooks';
 import { addProduct } from '@/store/product/productsActions';
 import { uploadImage } from '@/utils/imageUpload';
@@ -33,7 +34,14 @@ interface ProductRegistrationModalProps {
 export const ProductRegistrationModal: React.FC<
   ProductRegistrationModalProps
 > = ({ isOpen, onClose, onProductAdded }) => {
-  const dispatch = useAppDispatch();
+  const {
+    mutate: addProduct,
+    isSuccess,
+    isPending,
+    isError,
+    error,
+  } = useAddProduct();
+
   const { register, handleSubmit, setValue, reset } = useForm<NewProductDTO>({
     defaultValues: {
       title: '',
@@ -65,7 +73,7 @@ export const ProductRegistrationModal: React.FC<
       }
 
       const newProduct = createNewProduct({ ...data }, imageUrl);
-      await dispatch(addProduct(newProduct));
+      addProduct(newProduct);
       reset();
       onClose();
       onProductAdded();

@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { MAX_CART_VALUE } from '@/constants';
 import { cartValidationMessages } from '@/messages';
-import useCartStore from '@/store/cart/cartStore';
+import useCartStore from '@/store/cart/useCartStore';
 import { IUser } from '@/types/authType';
 import { CartItem } from '@/types/cartType';
 import { formatPrice } from '@/utils/formatter';

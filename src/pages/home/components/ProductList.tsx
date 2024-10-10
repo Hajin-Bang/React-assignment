@@ -5,15 +5,6 @@ import { PRODUCT_PAGE_SIZE } from '@/constants';
 import { extractIndexLink, isFirebaseIndexError } from '@/helpers/error';
 import { useModal } from '@/hooks/useModal';
 import { FirebaseIndexErrorModal } from '@/pages/error/components/FirebaseIndexErrorModal';
-import { selectFilter } from '@/store/filter/filterSelectors';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { loadProducts } from '@/store/product/productsActions';
-import {
-  selectHasNextPage,
-  selectIsLoading,
-  selectProducts,
-  selectTotalCount,
-} from '@/store/product/productsSelectors';
 import { CartItem } from '@/types/cartType';
 import { ChevronDown, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -22,9 +13,10 @@ import { ProductCardSkeleton } from '../skeletons/ProductCardSkeleton';
 import { EmptyProduct } from './EmptyProduct';
 import { ProductCard } from './ProductCard';
 import { ProductRegistrationModal } from './ProductRegistrationModal';
-import { useAuthStore } from '@/store/auth/authStore';
-// import { useProductStore } from '@/store/product/productStore';
-import useCartStore from '@/store/cart/cartStore';
+import { useAuthStore } from '@/store/auth/useAuthStore';
+import useCartStore from '@/store/cart/useCartStore';
+import useFilterStore from '@/store/filter/useFilterStore';
+import { useLoadProducts } from '@/hooks/useLoadProducts';
 
 interface ProductListProps {
   pageSize?: number;
@@ -34,39 +26,27 @@ export const ProductList: React.FC<ProductListProps> = ({
   pageSize = PRODUCT_PAGE_SIZE,
 }) => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const { isOpen, openModal, closeModal } = useModal();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isIndexErrorModalOpen, setIsIndexErrorModalOpen] =
     useState<boolean>(false);
   const [indexLink, setIndexLink] = useState<string | null>(null);
+  const [isInitial, setIsInitial] = useState(true);
 
-  const products = useAppSelector(selectProducts);
-  const hasNextPage = useAppSelector(selectHasNextPage);
-  const isLoading = useAppSelector(selectIsLoading);
-  const filter = useAppSelector(selectFilter);
-  const totalCount = useAppSelector(selectTotalCount);
-
-  const { user, isLogin } = useAuthStore((state) => ({
-    user: state.user,
-    isLogin: state.isLogin,
-  }));
-  const { addCartItem, resetCart } = useCartStore((state) => ({
-    addCartItem: state.addCartItem,
-    resetCart: state.resetCart,
-  }));
+  const { isLogin, user } = useAuthStore();
+  const { addCartItem } = useCartStore();
+  const filter = useFilterStore();
+  const { data, error, isLoading } = useLoadProducts(
+    filter,
+    pageSize,
+    currentPage,
+    isInitial
+  );
 
   const loadProductsData = async (isInitial = false): Promise<void> => {
     try {
       const page = isInitial ? 1 : currentPage + 1;
-      await dispatch(
-        loadProducts({
-          filter,
-          pageSize,
-          page,
-          isInitial,
-        })
-      ).unwrap();
+
       if (!isInitial) {
         setCurrentPage(page);
       }
@@ -90,7 +70,7 @@ export const ProductList: React.FC<ProductListProps> = ({
 
   const handleCartAction = (product: IProduct): void => {
     if (isLogin && user) {
-      const cartItem = { ...product, count: 1 };
+      const cartItem: CartItem = { ...product, count: 1 };
       addCartItem(cartItem, user.uid, 1);
       console.log(`${product.title} 상품이 \n장바구니에 담겼습니다.`);
     } else {
@@ -100,7 +80,7 @@ export const ProductList: React.FC<ProductListProps> = ({
 
   const handlePurchaseAction = (product: IProduct): void => {
     if (isLogin && user) {
-      const cartItem = { ...product, count: 1 };
+      const cartItem: CartItem = { ...product, count: 1 };
       addCartItem(cartItem, user.uid, 1);
       navigate(pageRoutes.cart);
     } else {
@@ -113,7 +93,7 @@ export const ProductList: React.FC<ProductListProps> = ({
     loadProductsData(true);
   };
 
-  const firstProductImage = products[0]?.image;
+  const firstProductImage = data?.products[0]?.image;
 
   useEffect(() => {
     if (firstProductImage) {
@@ -133,18 +113,18 @@ export const ProductList: React.FC<ProductListProps> = ({
           )}
         </div>
 
-        {isLoading && products.length === 0 ? (
+        {isLoading && data?.products.length === 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {Array.from({ length: pageSize }, (_, index) => (
               <ProductCardSkeleton key={index} />
             ))}
           </div>
-        ) : products.length === 0 ? (
+        ) : data?.products.length === 0 ? (
           <EmptyProduct onAddProduct={openModal} />
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {products.map((product, index) => (
+              {data?.products.map((product, index) => (
                 <ProductCard
                   key={`${product.id}_${index}`}
                   product={product}
@@ -159,7 +139,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                 />
               ))}
             </div>
-            {hasNextPage && currentPage * pageSize < totalCount && (
+            {data?.hasNextPage && currentPage * pageSize < data?.totalCount && (
               <div className="flex justify-center mt-4">
                 <Button onClick={() => loadProductsData()} disabled={isLoading}>
                   {isLoading ? '로딩 중...' : '더 보기'}

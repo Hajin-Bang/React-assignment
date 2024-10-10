@@ -13,9 +13,9 @@ import { Layout, authStatusType } from '@/pages/common/components/Layout';
 import { ItemList } from '@/pages/purchase/components/ItemList';
 import { Payment } from '@/pages/purchase/components/Payment';
 import { ShippingInformationForm } from '@/pages/purchase/components/ShippingInformationForm';
-import { useAuthStore } from '@/store/auth/authStore';
+import { useAuthStore } from '@/store/auth/useAuthStore';
 import useCartStore from '@/store/cart/cartStore';
-import usePurchaseStore from '@/store/purchase/purchaseStore';
+import usePurchaseStore from '@/store/purchase/usePurchaseStore';
 
 export interface FormData {
   name: string;
