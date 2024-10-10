@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { registerUserAPI } from '@/api/auth';
 import { useNavigate } from 'react-router-dom';
 import { pageRoutes } from '@/apiRoutes';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface AuthState {
   isLogin: boolean;
@@ -19,17 +20,25 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  isLogin: false,
-  user: null,
-  registerStatus: 'idle',
-  registerError: null,
-  setIsLogin: (isLogin) => set({ isLogin }),
-  setUser: (user) => set({ user, isLogin: true }),
-  setRegisterStatus: (status) => set({ registerStatus: status }),
-  setRegisterError: (error) => set({ registerError: error }),
-  logout: () => set({ isLogin: false, user: null }),
-}));
+export const useAuthStore = create(
+  persist<AuthState>( // 로그인 유지를 위해 persist 사용
+    (set) => ({
+      isLogin: false,
+      user: null,
+      registerStatus: 'idle',
+      registerError: null,
+      setIsLogin: (isLogin) => set({ isLogin }),
+      setUser: (user) => set({ user, isLogin: true }),
+      setRegisterStatus: (status) => set({ registerStatus: status }),
+      setRegisterError: (error) => set({ registerError: error }),
+      logout: () => set({ isLogin: false, user: null }),
+    }),
+    {
+      name: 'auth-storage', // 로컬 스토리지에 저장될 이름
+      storage: createJSONStorage(() => localStorage), // 기본값은 로컬 스토리지
+    }
+  )
+);
 
 interface RegisterUserPayload {
   email: string;
