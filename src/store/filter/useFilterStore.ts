@@ -19,14 +19,13 @@ const useFilterStore = create<FilterState>((set) => ({
   title: '',
   categoryId: ALL_CATEGORY_ID,
 
-  setMinPrice: (minPrice) => set((state) => ({ ...state, minPrice })),
-  setMaxPrice: (maxPrice) => set((state) => ({ ...state, maxPrice })),
-  setTitle: (title) => set((state) => ({ ...state, title })),
-  setCategoryId: (categoryId) => set((state) => ({ ...state, categoryId })),
+  setMinPrice: (minPrice) => set({ minPrice }),
+  setMaxPrice: (maxPrice) => set({ maxPrice }),
+  setTitle: (title) => set({ title }),
+  setCategoryId: (categoryId) => set({ categoryId }),
 
   resetFilter: () =>
     set((state) => ({
-      ...state,
       minPrice: 0,
       maxPrice: 0,
       title: '',

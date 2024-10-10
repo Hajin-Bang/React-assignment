@@ -7,7 +7,7 @@ import { debounce } from '@/utils/common';
 import { CategoryRadioGroup } from './CategoryRadioGroup';
 import { PriceRange } from './PriceRange';
 import { SearchBar } from './SearchBar';
-import useFilterStore from '@/store/filter/filterStore';
+import useFilterStore from '@/store/filter/useFilterStore';
 
 interface ProductFilterBoxProps {
   children: React.ReactNode;
