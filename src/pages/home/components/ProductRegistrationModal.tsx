@@ -21,6 +21,7 @@ import { createNewProduct } from '@/helpers/product';
 import { useAddProduct } from '@/hooks/useAddProducts';
 import { useAppDispatch } from '@/store/hooks';
 import { addProduct } from '@/store/product/productsActions';
+import { useToastStore } from '@/store/toast/useToastStore';
 import { uploadImage } from '@/utils/imageUpload';
 import { ChangeEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -41,6 +42,7 @@ export const ProductRegistrationModal: React.FC<
     isError,
     error,
   } = useAddProduct();
+  const { showToast } = useToastStore();
 
   const { register, handleSubmit, setValue, reset } = useForm<NewProductDTO>({
     defaultValues: {
@@ -77,6 +79,7 @@ export const ProductRegistrationModal: React.FC<
       reset();
       onClose();
       onProductAdded();
+      showToast('상품이 성공적으로 등록되었습니다.', 'success');
     } catch (error) {
       console.error('물품 등록에 실패했습니다.', error);
     }

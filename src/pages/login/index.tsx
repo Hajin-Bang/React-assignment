@@ -12,6 +12,7 @@ import { EMAIL_PATTERN } from '@/constants';
 import { auth } from '@/firebase';
 import { Layout, authStatusType } from '@/pages/common/components/Layout';
 import { useAuthStore } from '@/store/auth/useAuthStore';
+import { useToastStore } from '@/store/toast/useToastStore';
 
 interface FormErrors {
   email?: string;
@@ -22,6 +23,7 @@ interface FormErrors {
 export const LoginPage = () => {
   const navigate = useNavigate();
   const { setIsLogin, setUser } = useAuthStore();
+  const { showToast } = useToastStore();
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -69,7 +71,7 @@ export const LoginPage = () => {
             displayName: user.displayName ?? '',
           });
         }
-
+        showToast('로그인에 성공했습니다.', 'success');
         navigate(pageRoutes.main);
       } catch (error) {
         console.error(
