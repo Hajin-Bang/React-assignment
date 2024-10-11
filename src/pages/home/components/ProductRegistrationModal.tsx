@@ -23,7 +23,7 @@ import { useAppDispatch } from '@/store/hooks';
 import { addProduct } from '@/store/product/productsActions';
 import { useToastStore } from '@/store/toast/useToastStore';
 import { uploadImage } from '@/utils/imageUpload';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 interface ProductRegistrationModalProps {
@@ -55,35 +55,41 @@ export const ProductRegistrationModal: React.FC<
 
   const [image, setImage] = useState<File | null>(null);
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const file = files[0];
-      setImage(files[0]);
-    }
-  };
-
-  const onSubmit = async (data: NewProductDTO): Promise<void> => {
-    try {
-      if (!image) {
-        throw new Error('이미지를 선택해야 합니다.');
+  const handleImageChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>): void => {
+      const files = e.target.files;
+      if (files && files.length > 0) {
+        const file = files[0];
+        setImage(files[0]);
       }
+    },
+    []
+  );
 
-      const imageUrl = await uploadImage(image);
-      if (!imageUrl) {
-        throw new Error('이미지 업로드에 실패했습니다.');
+  const onSubmit = useCallback(
+    async (data: NewProductDTO): Promise<void> => {
+      try {
+        if (!image) {
+          throw new Error('이미지를 선택해야 합니다.');
+        }
+
+        const imageUrl = await uploadImage(image);
+        if (!imageUrl) {
+          throw new Error('이미지 업로드에 실패했습니다.');
+        }
+
+        const newProduct = createNewProduct({ ...data }, imageUrl);
+        addProduct(newProduct);
+        reset();
+        onClose();
+        onProductAdded();
+        showToast('상품이 성공적으로 등록되었습니다.', 'success');
+      } catch (error) {
+        console.error('물품 등록에 실패했습니다.', error);
       }
-
-      const newProduct = createNewProduct({ ...data }, imageUrl);
-      addProduct(newProduct);
-      reset();
-      onClose();
-      onProductAdded();
-      showToast('상품이 성공적으로 등록되었습니다.', 'success');
-    } catch (error) {
-      console.error('물품 등록에 실패했습니다.', error);
-    }
-  };
+    },
+    [image, addProduct, reset, onClose, onProductAdded, showToast]
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

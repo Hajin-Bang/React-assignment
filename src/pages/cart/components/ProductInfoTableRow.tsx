@@ -8,6 +8,7 @@ import { IUser } from '@/types/authType';
 import { CartItem } from '@/types/cartType';
 import { formatPrice } from '@/utils/formatter';
 import { Trash2 } from 'lucide-react';
+import { useCallback } from 'react';
 
 interface ProductInfoTableRowProps {
   item: CartItem;
@@ -22,24 +23,27 @@ export const ProductInfoTableRow = ({
 
   const { changeCartItemCount, removeCartItem } = useCartStore();
 
-  const handleClickDeleteItem = () => {
+  const handleClickDeleteItem = useCallback(() => {
     if (user) {
       removeCartItem(id, user.uid);
     }
-  };
+  }, [user, id, removeCartItem]);
 
-  const handleChangeCount = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newCount = Number(e.target.value);
+  const handleChangeCount = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>): void => {
+      const newCount = Number(e.target.value);
 
-    if (newCount > MAX_CART_VALUE) {
-      alert(cartValidationMessages.MAX_INPUT_VALUE);
-      return;
-    }
+      if (newCount > MAX_CART_VALUE) {
+        alert(cartValidationMessages.MAX_INPUT_VALUE);
+        return;
+      }
 
-    if (user) {
-      changeCartItemCount(id, newCount, user.uid);
-    }
-  };
+      if (user) {
+        changeCartItemCount(id, newCount, user.uid);
+      }
+    },
+    [user, id, changeCartItemCount]
+  );
 
   return (
     <TableRow>

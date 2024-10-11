@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
-import { Suspense } from 'react';
+import React, { Suspense, useCallback, useMemo } from 'react';
 
 import { ApiErrorBoundary } from '@/pages/common/components/ApiErrorBoundary';
 import { debounce } from '@/utils/common';
@@ -13,48 +13,54 @@ interface ProductFilterBoxProps {
   children: React.ReactNode;
 }
 
-const ProductFilterBox: React.FC<ProductFilterBoxProps> = ({ children }) => (
-  <Card className="my-4">
-    <CardContent>{children}</CardContent>
-  </Card>
+const ProductFilterBox: React.FC<ProductFilterBoxProps> = React.memo(
+  ({ children }) => (
+    <Card className="my-4">
+      <CardContent>{children}</CardContent>
+    </Card>
+  )
 );
 
 export const ProductFilter = () => {
   const { categoryId, setTitle, setMinPrice, setMaxPrice, setCategoryId } =
     useFilterStore();
 
-  const handleChangeInput = debounce(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeInput = useCallback(
+    debounce((e: React.ChangeEvent<HTMLInputElement>) => {
       setTitle(e.target.value);
-    },
-    300
+    }, 300),
+    [setTitle]
   );
 
-  const handlePriceChange = (
-    actionCreator: typeof setMinPrice | typeof setMaxPrice
-  ) =>
-    debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      if (value === '') {
-        actionCreator(-1);
-      } else {
-        const numericValue = Math.max(0, parseInt(value, 10));
-        if (!isNaN(numericValue)) {
-          actionCreator(numericValue);
+  const handlePriceChange = useCallback(
+    (actionCreator: typeof setMinPrice | typeof setMaxPrice) =>
+      debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (value === '') {
+          actionCreator(-1);
+        } else {
+          const numericValue = Math.max(0, parseInt(value, 10));
+          if (!isNaN(numericValue)) {
+            actionCreator(numericValue);
+          }
         }
-      }
-    }, 300);
+      }, 300),
+    []
+  );
 
   const handleMinPrice = handlePriceChange(setMinPrice);
   const handleMaxPrice = handlePriceChange(setMaxPrice);
 
-  const handleChangeCategory = (value: string) => {
-    if (value !== undefined) {
-      setCategoryId(value);
-    } else {
-      console.error('카테고리가 설정되지 않았습니다.');
-    }
-  };
+  const handleChangeCategory = useCallback(
+    (value: string) => {
+      if (value !== undefined) {
+        setCategoryId(value);
+      } else {
+        console.error('카테고리가 설정되지 않았습니다.');
+      }
+    },
+    [setCategoryId]
+  );
 
   return (
     <div className="space-y-4">
