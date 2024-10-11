@@ -5,13 +5,12 @@ import { ProductFilter } from '@/types/productType';
 export const useLoadProducts = (
   filter: ProductFilter,
   pageSize: number,
-  page: number,
-  isInitial: boolean
+  page: number
 ) => {
   const { data, error, isLoading } = useQuery({
     queryKey: ['products', filter, pageSize, page],
     queryFn: () => fetchProducts(filter, pageSize, page),
   });
 
-  return { data, error, isLoading, isInitial };
+  return { data, error, isLoading };
 };

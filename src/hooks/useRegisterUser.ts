@@ -13,15 +13,13 @@ export const useRegisterUser = () => {
   const { setUser, setIsLogin } = useAuthStore();
 
   return useMutation<IUser, Error, RegisterUserPayload>({
-    mutationFn: async (userData: RegisterUserPayload) => {
-      return await registerUserAPI(userData);
-    },
+    mutationFn: registerUserAPI,
     onSuccess: (user) => {
       setUser(user);
       setIsLogin(true);
     },
     onError: (error) => {
-      console.error('회원가입 실패', error.message);
+      console.error('회원가입 실패', error);
     },
   });
 };

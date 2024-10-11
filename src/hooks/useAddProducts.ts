@@ -7,14 +7,13 @@ export const useAddProduct = () => {
   const { setAdd, setError } = useProductStore();
 
   return useMutation<IProduct, Error, NewProductDTO>({
-    mutationFn: async (userData: NewProductDTO) => {
-      return await addProductAPI(userData);
-    },
+    mutationFn: addProductAPI,
     onSuccess: (newProduct) => {
       setAdd(newProduct);
     },
-    onError: () => {
+    onError: (error) => {
       setError();
+      console.error('상품 추가 실패', error);
     },
   });
 };
